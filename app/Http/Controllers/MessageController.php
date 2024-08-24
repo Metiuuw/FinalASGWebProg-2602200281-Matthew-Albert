@@ -33,12 +33,10 @@ class MessageController extends Controller
         $senderID = Auth::user()->id;
         $receiverID = $request->input('friend_id');
 
-        // Validate the input
         $request->validate([
             'new_message' => 'required|string|max:255',
         ]);
 
-        // Create and save the new message
         Message::create([
             'sender_id' => $senderID,
             'receiver_id' => $receiverID,
@@ -57,7 +55,6 @@ class MessageController extends Controller
         $currentUserID = Auth::user()->id;
         $friend = User::findOrFail($id);
 
-        // Retrieve all messages between the current user and the friend
         $messages = Message::where(function ($query) use ($currentUserID, $id) {
             $query->where('sender_id', $currentUserID)
                 ->where('receiver_id', $id);

@@ -26,7 +26,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ url('/login') }}">
+            <form method="POST" action="{{ route('logined') }}">
                 @csrf
                 <div class="mb-3">
                     <label for="email" class="form-label">Email:</label>

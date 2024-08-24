@@ -27,7 +27,7 @@ class FriendRequestAccepted extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database']; // You can add 'database' or 'mail' depending on your preference
+        return ['mail', 'database']; 
     }
 
     /**

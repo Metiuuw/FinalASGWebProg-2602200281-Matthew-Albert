@@ -39,24 +39,20 @@ class FriendController extends Controller
         $friendID = $request->input('friend_id');
         $request_id = $request->input('request_id');
 
-        // Create the friendship
         $friend = Friend::create([
             'user_id' => $currentUserID,
             'friend_id' => $friendID
         ]);
 
-        // Create the reciprocal friendship
         $friend2 = Friend::create([
             'user_id' => $friendID,
             'friend_id' => $currentUserID
         ]);
 
-        // Update the friend request status
         $updateRequest = FriendRequest::find($request_id);
         $updateRequest->status = 'accepted';
         $updateRequest->save();
 
-        // Notify the user whose request was accepted
         $receiver = User::find($friendID);
         $receiver->notify(new FriendRequestAccepted($currentUserID));
 

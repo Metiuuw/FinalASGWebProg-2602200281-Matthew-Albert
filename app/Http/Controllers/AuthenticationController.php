@@ -12,9 +12,16 @@ use Illuminate\Support\Facades\Session;
 
 class AuthenticationController extends Controller
 {
+
+    public function home(){
+        return view('home');
+    }
+    public function registerView(){
+        return view('auth.register');
+    }
+
     public function register(Request $request)
     {
-        // Validate the registration data
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -41,11 +48,12 @@ class AuthenticationController extends Controller
             'profile_path' => 'profile/' . $faker->numberBetween(1, 3) . '.jpg',
         ]);
 
-        // Auth::login($user);
-
         return redirect('/login');
     }
 
+    public function loginView(){
+        return view('auth.login');
+    }
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -59,10 +67,8 @@ class AuthenticationController extends Controller
             Auth::login($user);
 
             return redirect()->route('user.index');
-            // return redirect('/');
         }
 
-        // If login fails, redirect back with an error message
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
@@ -70,22 +76,15 @@ class AuthenticationController extends Controller
 
     public function logout(Request $request)
     {
-        // Log the user out
         Auth::logout();
-
-        // Invalidate the session
         $request->session()->invalidate();
-
-        // Regenerate the CSRF token
         $request->session()->regenerateToken();
 
-        // Redirect to the login page
         return redirect('/login');
     }
 
     public function update_paid(Request $request)
     {
-        // Validate the form data
         $validatedData = $request->validate([
             'payment_amount' => 'required|numeric|min:0',
             'price' => 'required|numeric',
@@ -98,10 +97,8 @@ class AuthenticationController extends Controller
         $user = Auth::user();
 
         if ($difference < 0) {
-            // User underpaid
             return redirect()->back()->with('error', 'You are still underpaid $' . number_format(-$difference, 2));
         } elseif ($difference > 0) {
-            // User overpaid
             return redirect()->route('handle.overpayment', [
                 'amount' => $difference,
                 'payment_amount' => $paymentAmount,
@@ -110,7 +107,7 @@ class AuthenticationController extends Controller
         } else {
             $user->has_paid = true;
             $user->save();
-            return redirect()->back()->with('success', 'Payment successful!');
+            return redirect()->route('user.index')->with('success', 'Payment successful!');
         }
     }
 
@@ -120,7 +117,6 @@ class AuthenticationController extends Controller
         $paymentAmount = $request->input('payment_amount');
         $price = $request->input('price');
 
-        // Show a view or dialog to handle overpayment
         return view('overpayment', [
             'amount' => $amount,
             'payment_amount' => $paymentAmount,
@@ -148,8 +144,13 @@ class AuthenticationController extends Controller
         }
     }
 
+    public function pay(){
+        $user = Auth::user();
+        $price = $user->register_price;
+        return view('pay', compact('price'));
+    }
+
     public function language($lang){
-        // dd($lang);
         App::setLocale($lang);
         Session::put('locale', $lang);
 
