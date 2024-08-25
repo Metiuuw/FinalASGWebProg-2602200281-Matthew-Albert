@@ -40,7 +40,7 @@
                 <input type="hidden" id="price" name="price" value="{{ $price }}">
 
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">Pay Now</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: green">Pay Now</button>
                 </div>
             </form>
         </div>
